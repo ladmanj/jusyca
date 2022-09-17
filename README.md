@@ -1,2 +1,2 @@
 # jusyca
-**Ju**lia **Sy**mbolic **C**irquit **A**nalysis
+**Ju**lia **Sy**mbolic **C**ircuit **A**nalysis
