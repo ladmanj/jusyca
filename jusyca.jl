@@ -9,7 +9,7 @@
 #
 # https://github.com/echeever/scam
 #
-# Julia version by Jakub Ladman ladmanj@volny.cz
+# Julia version by Jakub Ladman ladmanj@volny.cz, 2022
 
 using Printf
 using TickTock
