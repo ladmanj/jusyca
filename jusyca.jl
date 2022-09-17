@@ -6,6 +6,10 @@
 #
 # Written by Erik Cheever, Swarthmore College, 2019
 # echeeve1@swarthmore.edu
+#
+# https://github.com/echeever/scam
+#
+# Julia version by Jakub Ladman ladmanj@volny.cz
 
 using Printf
 using TickTock
