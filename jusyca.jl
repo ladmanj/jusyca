@@ -12,7 +12,8 @@
 # Julia version by Jakub Ladman ladmanj@volny.cz, 2022
 
 using Printf
-using TickTock
+#using TickTock
+#using SymPy
 using Symbolics
 
 #function build_expr(vars, T)
@@ -52,7 +53,7 @@ nLines = length(Name)  # Number of lines in file (or elements in circuit).
 N1=parse.(Int, N1)   # Get node numbers
 N2=parse.(Int, N2)
 
-tick()                  # Begin timing.
+#tick()                  # Begin timing.
 
 n = maximum(abs,[N1;N2],dims=1)[1]   # Find highest node number (i.e., number of nodes)
 
@@ -299,30 +300,34 @@ end
 # and solve!
 
 A = [G B;C D] # Create and display A matrix
+A = Meta.parse.(A)
+A = parse_expr_to_symbolic.(A,(Main,))
 @printf("\nThe A matrix: \n")
 display(A)
 
 
 x = [v;j]       # Create and display x matrix
+x = Meta.parse.(x)
+x = parse_expr_to_symbolic.(x,(Main,))
 @printf("\nThe x matrix: \n")
 display(x)
 
 z = [i;e]       # Create and display z matrix
+z = Meta.parse.(z)
+z = parse_expr_to_symbolic.(z,(Main,))
 @printf("\nThe z matrix:  \n")
 display(z)
+
+                                                # Rest of file, under this line, not working !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 # Find all variables in matrices (symvar) and make them symbolic (syms)
 #syms([symvar(A), symvar(x), symvar(z)])
 
-@variables $(eval(Meta.parse.(Name)))
 
-A = Meta.parse.(A)
-
-z = Meta.parse.(z)
-
-# Displey the matrix equation
+# Display the matrix equation
 @printf("\nThe matrix equation: \n")
 display(A*x==z)
+
 
 a= Symbolics.simplify(A\z)  # Get the solution, this is the heart of the algorithm.
 
@@ -381,4 +386,4 @@ for k1 in 1:nLines
     end
 end
 
-@printf("\nElapsed time is %g seconds.\n",tock())
+#@printf("\nElapsed time is %g seconds.\n",tock())
