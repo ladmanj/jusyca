@@ -324,22 +324,24 @@ display(z)
 #display(A*x==z)
 
 
-a= Symbolics.simplify(A\z)  # Get the solution, this is the heart of the algorithm.
+a= Symbolics.simplify.(A\z)  # Get the solution, this is the heart of the algorithm.
 
-# This seems like an awkward way of doing this, if you know of a better way
-# please contact me.
-for i in 1:length(a)  # Assign each solution to its output variable.
-    eval(sprintf("%s = %s;",x(i),a(i)))
-end
+# instead of polluting variable scope, let's put eqn system solution into a hash
+#for i in 1:length(a)  # Assign each solution to its output variable.
+#    eval(sprintf("%s = %s;",x(i),a(i)))
+#end
+y = Dict(Symbol.(x) .=> a)
+# instead of working with e.g. v_1 we use y[:v_1]
 
 @printf("\nThe solution:  \n")
-display(x==eval(x))
+@show y
 
 # Lastly, assign any numeric values to symbolic variables.
 # Go through the elements a line at a time and see if the values are valid
 # numbers.  If so, assign them to the variable name.  Then you can use
 # "eval" to get numerical results.
 for k1 in 1:nLines
+    num = nothing
     if ((Name[k1][1] == 'R')
      || (Name[k1][1] == 'L')
      || (Name[k1][1] == 'C')
@@ -375,9 +377,15 @@ for k1 in 1:nLines
             status = false
         end
     end
+    @show status num
     if status  # status will be true if the argument was a valid number.
         # If the number is valid, assign it to the variable.
-        eval(string.(Name[k1], " = ", num))
+        #eval(string.(Name[k1], " = ", num))
+	# let's substitute into the eqn solution expressions instead:
+	var = parse_expr_to_symbolic.(Symbol(Name[k1]), (Main,))[1]
+	for ex in keys(y)
+	    y[ex] = SymbolicUtils.substitute(y[ex], Dict([var => num]))
+	end
     end
 end
 
