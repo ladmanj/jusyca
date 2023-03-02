@@ -291,6 +291,7 @@ end
 A = [G B;C D] # Create and display A matrix
 A = Meta.parse.(A)
 A = parse_expr_to_symbolic.(A,(Main,))
+A = simplify.(A)
 @printf("\nThe A matrix: \n")
 display(A)
 
@@ -298,12 +299,14 @@ display(A)
 x = [v;j]       # Create and display x matrix
 x = Meta.parse.(x)
 x = parse_expr_to_symbolic.(x,(Main,))
+x = simplify.(x)
 @printf("\nThe x matrix: \n")
 display(x)
 
 z = [i;e]       # Create and display z matrix
 z = Meta.parse.(z)
 z = parse_expr_to_symbolic.(z,(Main,))
+z = simplify.(z)
 @printf("\nThe z matrix:  \n")
 display(z)
 
