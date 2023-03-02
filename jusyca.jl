@@ -13,18 +13,7 @@
 
 using Printf
 #using TickTock
-#using SymPy
 using Symbolics
-
-#function build_expr(vars, T)
-#    s = size(T, 2)
-#    exprs = Meta.parse.(T)
-#    return quote
-#        @variables $(vars...)
-#        Base.hvcat($s, $(exprs...))
-#    end
-#end
-#
 
 @printf("\nStarted -- please be patient.\n\n")
 
@@ -132,7 +121,7 @@ for k1 in 1:nLines
             end
             e[vsCnt]=Name[k1]         # Add Name of source to RHS
             j[vsCnt]=string.("I_",Name[k1])  # Add current through source to unknowns
-            @variables $(eval(Meta.parse(j[vsCnt])))
+
             
         # Independent current source
     elseif (Name[k1][1] == 'I') # IXXXXXXX N1 N2 VALUE  (Current N1 to N2)
@@ -158,7 +147,7 @@ for k1 in 1:nLines
                 C[vsCnt, n2] = string.(C[vsCnt, n2]," - 1")
             end
             j[vsCnt]=string.("I_",Name[k1])  # Add current through source to unknowns
-            @variables $(eval(Meta.parse(j[vsCnt])))
+
             
         # Voltage controlled voltage source
     elseif (Name[k1][1] == 'E') # VCVS
@@ -187,7 +176,7 @@ for k1 in 1:nLines
             end
             
             j[vsCnt] = string.("I_",Name[k1]) # Add current through source to unknowns
-            @variables $(eval(Meta.parse(j[vsCnt])))
+
             
         # Voltage controlled current source
     elseif (Name[k1][1] == 'G')    # VCCS GXXXXXXX N+ N- NC+ NC- VALUE
@@ -264,7 +253,7 @@ for k1 in 1:nLines
                 C[vsCnt, n2] = string.(C[vsCnt, n2]," - 1")
             end
             j[vsCnt]=string.("I_",Name[k1]) # Add current through source to unknowns
-            @variables $(eval(Meta.parse(j[vsCnt])))
+
     end
 end
 
@@ -326,7 +315,7 @@ display(z)
 
 # Display the matrix equation
 @printf("\nThe matrix equation: \n")
-display(A*x==z)
+#display(A*x==z)
 
 
 a= Symbolics.simplify(A\z)  # Get the solution, this is the heart of the algorithm.
