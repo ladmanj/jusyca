@@ -20,7 +20,7 @@ function parse_string_matrix(M)
     M = Meta.parse.(M)
     M = parse_expr_to_symbolic.(M, (Main,))
     M = convert(Matrix{Num}, M)
-    return simplify.(M)
+    M = simplify.(M)
 
 end
 
@@ -37,7 +37,7 @@ function solve_circuit(fname)
     #fname = "circuits/thermal2_sym.cir"
     # Print out the netlist (a file describing the circuit with one circuit
     # per line.
-    @printf("Netlist:\n")
+    @printf("Netlist: %s\n", fname)
 
     fid = open(fname)
     fileIn = split.(readlines(fid))  # Read file (up to 6 items per line
@@ -154,7 +154,7 @@ function solve_circuit(fname)
 
             # Op amp
         elseif (Name[k1][1] == 'O')  # 0XXXXXXX N1 N2 N3 VALUE  (N1=+, N2=-, N3=Vout)
-            n3 = parse.(Float64, arg3[k1])  # This find n3
+            n3 = parse.(Int, arg3[k1])  # This find n3
              vsCnt = vsCnt + 1          # Keep track of number of voltage sources
 
             # Change B and C matrices as appropriate.
@@ -171,8 +171,8 @@ function solve_circuit(fname)
         # Voltage controlled voltage source
         elseif (Name[k1][1] == 'E') # VCVS
              vsCnt = vsCnt + 1           # Keep track of number of voltage sources
-            nc1 = parse.(Float64, arg3[k1])  # Control voltage, pos side
-            nc2 = parse.(Float64, arg4[k1])  # Control voltage, neg side
+            nc1 = parse.(Int, arg3[k1])  # Control voltage, pos side
+            nc2 = parse.(Int, arg4[k1])  # Control voltage, neg side
 
             # Change B and C matrices as appropriate for output nodes.
             #  (if node is not ground)
@@ -199,8 +199,8 @@ function solve_circuit(fname)
 
         # Voltage controlled current source
         elseif (Name[k1][1] == 'G')    # VCCS GXXXXXXX N+ N- NC+ NC- VALUE
-            nc1 = parse.(Float64, arg3[k1])    # Control voltage, pos side
-            nc2 = parse.(Float64, arg4[k1])    # Control voltage, neg side
+            nc1 = parse.(Int, arg3[k1])    # Control voltage, pos side
+            nc2 = parse.(Int, arg4[k1])    # Control voltage, neg side
             g = Name[k1]
 
             # Create a string that shows if each node is ~= zero
@@ -348,11 +348,12 @@ function solve_circuit(fname)
 
     # Display the matrix equation
     @printf("\nThe matrix equation: \n")
-    @show (A * x ~ z)
+    display(A * x ~ z)
 
     a = Symbolics.simplify.(A \ z)  # Get the solution, this is the heart of the algorithm.
 
     @show a
+    #render(latexify(a))
 
     # instead of polluting variable scope, let's put eqn system solution into a hash
     #for i in 1:length(a)  # Assign each solution to its output variable.
@@ -370,6 +371,7 @@ function solve_circuit(fname)
     # "eval" to get numerical results.
     for k1 in 1:nLines
         num = nothing
+        status = false
         if ((Name[k1][1] == 'R')
             || (Name[k1][1] == 'L')
             || (Name[k1][1] == 'C')
@@ -422,4 +424,16 @@ function solve_circuit(fname)
     @printf("\nElapsed time is %g seconds.\n", tok())
 end
 
-solve_circuit("circuits/thermal2_sym.cir")
+# solve_circuit("circuits/thermal2_sym.cir")
+# solve_circuit("circuits/example0.cir")
+# solve_circuit("circuits/example1.cir")
+# solve_circuit("circuits/example3.cir")
+# solve_circuit("circuits/example4.cir")
+solve_circuit("circuits/example5.cir")
+# solve_circuit("circuits/example6.cir")
+# solve_circuit("circuits/example7.cir")
+# solve_circuit("circuits/exampleE.cir")
+# solve_circuit("circuits/exampleF.cir")
+# solve_circuit("circuits/exampleG.cir")
+# solve_circuit("circuits/exampleH.cir")
+
